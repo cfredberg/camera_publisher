@@ -23,9 +23,9 @@ class CameraStoppedReadingError(Exception):
 
 class WebcamPublisher(Node):
 
-    def __init__(self):
+    def __init__(self, file):
         super().__init__('webcam_publisher')
-
+        self.file = file
         self.publisher = self.create_publisher(Image, f'/cameras/raw/camera_0', 10)
 
         self.bridge = CvBridge()
@@ -46,29 +46,28 @@ class WebcamPublisher(Node):
         
         msg = self.bridge.cv2_to_imgmsg(frame, "bgr8")
         
-
         self.publisher.publish(msg)
-        self.get_logger().info("sent frame " + str(self.i))
+        print(f"time: {self.get_clock().now()} frame: {str(self.i)}", file=self.file)
         self.i += 1
 
 
 def main(args=None):
     rclpy.init(args=args)
+    with open("webcam_publisher.txt", "w") as f:
+        webcam_publisher = WebcamPublisher(f)
 
-    webcam_publisher = WebcamPublisher()
-
-    try:
-        rclpy.spin(webcam_publisher)
-    except Exception as e:
-        print(e)
-        if isinstance(e, CameraStoppedReadingError):
-            webcam_publisher.cap.release()
-    finally:
-        # Destroy the node explicitly
-        # (optional - otherwise it will be done automatically
-        # when the garbage collector destroys the node object)
-        webcam_publisher.destroy_node()
-        rclpy.shutdown()
+        try:
+            rclpy.spin(webcam_publisher)
+        except Exception as e:
+            print(e)
+            if isinstance(e, CameraStoppedReadingError):
+                webcam_publisher.cap.release()
+        finally:
+            # Destroy the node explicitly
+            # (optional - otherwise it will be done automatically
+            # when the garbage collector destroys the node object)
+            webcam_publisher.destroy_node()
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
