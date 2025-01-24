@@ -11,6 +11,8 @@ from sensor_msgs.msg import Image
 import cv2
 import pickle
 
+from time import sleep
+
 # from std_msgs.msg import String
 
 class CameraNotOpenError(Exception):
@@ -26,16 +28,23 @@ class UsbCameraPublisher(Node):
     def __init__(self):
         super().__init__('usb_camera_publisher')
 
-        self.declare_parameter('camera_name', 5)
+        self.declare_parameter('camera_name', "")
+        self.declare_parameter('camera_id', 5)
         camera_name = self.get_parameter('camera_name').get_parameter_value().string_value
-        self.publisher = self.create_publisher(Image, f'/cameras/raw/camera_{camera_name}', 10)
+        camera_id = self.get_parameter('camera_id').get_parameter_value().integer_value
+        self.publisher = self.create_publisher(Image, f'/cameras/raw/camera_{camera_id}', 1)
 
         self.bridge = CvBridge()
 
+        print(f"Camera name: {camera_name}")
+
         gst_str = f"v4l2src device=/dev/v4l/by-id/{camera_name} ! video/x-raw,width=320,height=240,framerate=30/1 ! videoconvert ! appsink"
         self.cap = cv2.VideoCapture(gst_str, cv2.CAP_GSTREAMER)
+        print("Camera Opening...")
+        sleep(2)
         if not self.cap.isOpened():
             raise CameraNotOpenError
+        print("Camera Open!")
 
         timer_period = 1/60  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
