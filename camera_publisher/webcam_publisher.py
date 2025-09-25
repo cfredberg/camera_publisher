@@ -41,7 +41,6 @@ class WebcamPublisher(Node):
         ret, frame = self.cap.read()
         if not ret:
             raise CameraStoppedReadingError
-        pickled_frame = pickle.dumps(frame)
         
         msg = self.bridge.cv2_to_imgmsg(frame, "bgr8")
         

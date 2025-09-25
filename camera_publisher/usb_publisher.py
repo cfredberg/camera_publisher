@@ -37,8 +37,8 @@ class UsbCameraPublisher(Node):
         self.bridge = CvBridge()
 
         print(f"Camera name: {camera_name}")
-
-        gst_str = f"v4l2src device=/dev/v4l/by-id/{camera_name} ! video/x-raw,width=320,height=240,framerate=30/1 ! videoconvert ! appsink"
+        # gst_str = f"v4l2src device=/dev/v4l/by-id/{camera_name} ! video/x-raw,width=320,height=240,framerate=30/1 ! videoconvert ! appsink"
+        gst_str = f'v4l2src device="/dev/v4l/by-id/{camera_name}" ! videoconvert ! appsink'
         self.cap = cv2.VideoCapture(gst_str, cv2.CAP_GSTREAMER)
         print("Camera Opening...")
         sleep(2)
