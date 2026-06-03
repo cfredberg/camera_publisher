@@ -32,10 +32,12 @@ class UsbCameraPublisher(Node):
         self.declare_parameter('camera_id', 5)
         self.declare_parameter('blue', False)
         self.declare_parameter('thick', False)
+        self.declare_parameter('small', False)
         camera_name = self.get_parameter('camera_name').get_parameter_value().string_value
         camera_id = self.get_parameter('camera_id').get_parameter_value().integer_value
         using_blue = self.get_parameter('blue').get_parameter_value().bool_value
         using_thick = self.get_parameter('thick').get_parameter_value().bool_value
+        using_small = self.get_parameter('small').get_parameter_value().bool_value
         self.publisher = self.create_publisher(Image, f'/cameras/raw/camera_{camera_id}', 1)
 
         self.bridge = CvBridge()
@@ -43,10 +45,16 @@ class UsbCameraPublisher(Node):
         print(f"Camera name: {camera_name}")
         # gst_str = f"v4l2src device=/dev/v4l/by-id/{camera_name} ! video/x-raw,width=320,height=240,framerate=30/1 ! videoconvert ! appsink"
         if using_blue:
+            print("Using Blue Camera Stream")
             gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/by-id/{camera_name}" ! video/x-raw,width=640,height=480,framerate=25/1 ! videoconvert ! appsink'
         elif using_thick:
+            print("Using Thick Camera Stream")
             gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/by-id/{camera_name}" ! video/x-raw,width=640,height=480,framerate=20/1 ! videoconvert ! appsink'
+        elif using_small:
+            print("Using Small Camera Stream")
+            gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/by-id/{camera_name}" ! video/x-raw,width=640,height=480,framerate=30/1 ! videoconvert ! appsink'
         else:
+            print("Using Generic Camera Stream")
             gst_str = f'v4l2src device="/dev/v4l/by-id/{camera_name}" ! videoconvert ! appsink'
         self.cap = cv2.VideoCapture(gst_str, cv2.CAP_GSTREAMER)
         print("Camera Opening...")
