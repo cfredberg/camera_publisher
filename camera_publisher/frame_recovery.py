@@ -53,6 +53,11 @@ class FrameRecovery(Node):
 
         if (cur_time - self.last_msg_time)/self.fps >= self.hang_time:
             self.frame_publisher.publish(self.no_signal_msg)
+            '''
+            
+            Key issue: when msg sent after timeout, subscriber sees the msg, and resets timeout wait.  This adds a lot of delay on the main interface.
+            
+            '''
         
         print(f'i: {self.i}')
 
