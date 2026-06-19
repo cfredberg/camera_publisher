@@ -30,7 +30,7 @@ class UsbCameraPublisher(Node):
 
         self.declare_parameter('use_name', False)
         self.declare_parameter('camera_name', "")
-        self.declare_parameter('port', '4.2')
+        self.declare_parameter('port', 0.0)
         self.declare_parameter('camera_id', 5)
         self.declare_parameter('by-id', False)
         self.declare_parameter('blue', False)
