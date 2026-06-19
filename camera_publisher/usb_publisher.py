@@ -109,7 +109,7 @@ class UsbCameraPublisher(Node):
         if not ret:
             raise CameraStoppedReadingError
 
-        if slelf.flip:
+        if self.flip:
             frame = cv2.rotate(frame, cv2.ROTATE_180)
         
         msg = self.bridge.cv2_to_imgmsg(frame, "bgr8")
