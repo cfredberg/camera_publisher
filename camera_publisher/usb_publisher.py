@@ -28,14 +28,18 @@ class UsbCameraPublisher(Node):
     def __init__(self):
         super().__init__('usb_camera_publisher')
 
+        self.declare_parameter('use_name', False)
         self.declare_parameter('camera_name', "")
+        self.declare_parameter('port', '4.2')
         self.declare_parameter('camera_id', 5)
         self.declare_parameter('by-id', False)
         self.declare_parameter('blue', False)
         self.declare_parameter('thick', False)
         self.declare_parameter('small', False)
         self.declare_parameter('ir', False)
+        use_name = self.get_parameter('use_name').get_parameter_value().bool_value
         camera_name = self.get_parameter('camera_name').get_parameter_value().string_value
+        port = self.get_parameter('port').get_parameter_value().string_value
         camera_id = self.get_parameter('camera_id').get_parameter_value().integer_value
         by_id = self.get_parameter('by-id').get_parameter_value().bool_value
         using_blue = self.get_parameter('blue').get_parameter_value().bool_value
@@ -55,19 +59,34 @@ class UsbCameraPublisher(Node):
 
         if using_blue:
             print("Using Blue Camera Stream")
-            gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/{type_cam_src}/{camera_name}" ! image/jpeg,width=640,height=480,framerate=25/1 ! jpegdec ! videoconvert ! appsink'
+            if use_name:
+                gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/{type_cam_src}/{camera_name}" ! image/jpeg,width=640,height=480,framerate=25/1 ! jpegdec ! videoconvert ! appsink'
+            else:
+                gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:2.{port}:1.0-video-index0" ! image/jpeg,width=640,height=480,framerate=25/1 ! jpegdec ! videoconvert ! appsink'
         elif using_thick:
             print("Using Thick Camera Stream")
-            gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/{type_cam_src}/{camera_name}" ! image/jpeg,width=640,height=480,framerate=30/1 ! jpegdec ! videoconvert ! appsink'
+            if use_name:
+                gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/{type_cam_src}/{camera_name}" ! image/jpeg,width=640,height=480,framerate=30/1 ! jpegdec ! videoconvert ! appsink'
+            else:
+                gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:2.{port}:1.0-video-index0" ! image/jpeg,width=640,height=480,framerate=30/1 ! jpegdec ! videoconvert ! appsink'
         elif using_small:
             print("Using Small Camera Stream")
-            gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/{type_cam_src}/{camera_name}" ! image/jpeg,width=640,height=480,framerate=30/1 ! jpegdec ! videoconvert ! appsink'
+            if use_name:
+                gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/{type_cam_src}/{camera_name}" ! image/jpeg,width=640,height=480,framerate=30/1 ! jpegdec ! videoconvert ! appsink'
+            else:
+                gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:2.{port}:1.0-video-index0" ! image/jpeg,width=640,height=480,framerate=30/1 ! jpegdec ! videoconvert ! appsink'
         elif using_ir:
             print("Using IR Camera Stream")
-            gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/{type_cam_src}/{camera_name}" ! videoconvert ! videoscale ! video/x-raw,width=640,height=480 ! appsink'
+            if use_name: 
+                gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/{type_cam_src}/{camera_name}" ! videoconvert ! videoscale ! video/x-raw,width=640,height=480 ! appsink'
+            else:
+                gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:2.{port}:1.0-video-index0" ! videoconvert ! videoscale ! video/x-raw,width=640,height=480 ! appsink'
         else:
             print("Using Generic Camera Stream")
-            gst_str = f'v4l2src device="/dev/v4l/{type_cam_src}/{camera_name}" ! videoconvert ! appsink'
+            if use_name:
+                gst_str = f'v4l2src device="/dev/v4l/{type_cam_src}/{camera_name}" ! videoconvert ! appsink'
+            else:
+                gst_str = f'v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:2.{port}:1.0-video-index0" ! videoconvert ! appsink'
 
         print(f"gst_str: {gst_str}")
 
