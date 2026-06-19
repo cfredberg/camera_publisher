@@ -37,15 +37,18 @@ class UsbCameraPublisher(Node):
         self.declare_parameter('thick', False)
         self.declare_parameter('small', False)
         self.declare_parameter('ir', False)
+        self.declare_parameter('flip', False)
         use_name = self.get_parameter('use_name').get_parameter_value().bool_value
         camera_name = self.get_parameter('camera_name').get_parameter_value().string_value
-        port = self.get_parameter('port').get_parameter_value().string_value
+        port = self.get_parameter('port').get_parameter_value().double_value
+        port = str(port)
         camera_id = self.get_parameter('camera_id').get_parameter_value().integer_value
         by_id = self.get_parameter('by-id').get_parameter_value().bool_value
         using_blue = self.get_parameter('blue').get_parameter_value().bool_value
         using_thick = self.get_parameter('thick').get_parameter_value().bool_value
         using_small = self.get_parameter('small').get_parameter_value().bool_value
         using_ir = self.get_parameter('ir').get_parameter_value().bool_value
+        flip = self.get_parameter('flip').get_parameter_value().bool_value
         self.publisher = self.create_publisher(Image, f'/cameras/raw/camera_{camera_id}', 1)
 
         self.bridge = CvBridge()
@@ -105,6 +108,9 @@ class UsbCameraPublisher(Node):
         ret, frame = self.cap.read()
         if not ret:
             raise CameraStoppedReadingError
+
+        if flip:
+            frame = cv2.rotate(frame, cv2.ROTATE_180)
         
         msg = self.bridge.cv2_to_imgmsg(frame, "bgr8")
         
