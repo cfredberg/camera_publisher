@@ -57,7 +57,7 @@ class UsbCameraPublisher(Node):
             reliability=ReliabilityPolicy.BEST_EFFORT
         )
 
-        self.publisher = self.create_publisher(Image, f'/cameras/raw/camera_{camera_id}', 1, qos)
+        self.publisher = self.create_publisher(Image, f'/cameras/raw/camera_{camera_id}', qos)
 
         self.bridge = CvBridge()
 
