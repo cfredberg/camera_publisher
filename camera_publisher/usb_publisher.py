@@ -8,6 +8,8 @@ from cv_bridge import CvBridge
 from std_msgs.msg import String
 from sensor_msgs.msg import Image
 
+from image_transport_py import ImageTransport
+
 import cv2
 import pickle
 
@@ -51,6 +53,11 @@ class UsbCameraPublisher(Node):
         using_small = self.get_parameter('small').get_parameter_value().bool_value
         using_ir = self.get_parameter('ir').get_parameter_value().bool_value
         self.flip = self.get_parameter('flip').get_parameter_value().bool_value
+
+        self.image_transport = ImageTransport(
+            'imagetransport_pub', image_transport='compressed'
+        )
+        self.img_pub = self.image_transport.advertise('camera/image', 1)
 
         qos = QoSProfile(
             depth=1,
@@ -121,9 +128,12 @@ class UsbCameraPublisher(Node):
             frame = cv2.rotate(frame, cv2.ROTATE_180)
         
         msg = self.bridge.cv2_to_imgmsg(frame, "bgr8")
+
+        msg.header.stamp = self.get_clock().now().to_msg()
+        self.img_pub.publish(image_msg)
         
 
-        self.publisher.publish(msg)
+        # self.publisher.publish(msg)
         self.get_logger().info("sent frame " + str(self.i))
         self.i += 1
 
