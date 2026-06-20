@@ -13,6 +13,8 @@ import pickle
 
 from time import sleep
 
+from rclpy.qos import QoSProfile, ReliabilityPolicy
+
 # from std_msgs.msg import String
 
 class CameraNotOpenError(Exception):
@@ -49,7 +51,13 @@ class UsbCameraPublisher(Node):
         using_small = self.get_parameter('small').get_parameter_value().bool_value
         using_ir = self.get_parameter('ir').get_parameter_value().bool_value
         self.flip = self.get_parameter('flip').get_parameter_value().bool_value
-        self.publisher = self.create_publisher(Image, f'/cameras/raw/camera_{camera_id}', 1)
+
+        qos = QoSProfile(
+            depth=1,
+            reliability=ReliabilityPolicy.BEST_EFFORT
+        )
+
+        self.publisher = self.create_publisher(Image, f'/cameras/raw/camera_{camera_id}', 1, qos)
 
         self.bridge = CvBridge()
 
