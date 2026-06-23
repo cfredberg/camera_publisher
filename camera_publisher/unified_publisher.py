@@ -51,7 +51,7 @@ class Camera():
 
         self.cap = cv2.VideoCapture(gst_str, cv2.CAP_GSTREAMER)
         print(f"{self.name} Opening...")
-        sleep(2)
+        sleep(1)
         if not self.cap.isOpened():
             print(f"{self.name} unable to be opened")
         print(f"{self.name} open!")
@@ -126,6 +126,7 @@ class UnifiedPublisher(Node):
         self.i = 0
 
     def timer_callback(self):
+
         frames_0_1 = cv2.hconcat([self.cams[0].read_frame(), self.cams[1].read_frame()])
         frames_2_3 = cv2.hconcat([self.cams[2].read_frame(), self.cams[3].read_frame()])
         all_frames = cv2.vconcat([frames_0_1, frames_2_3])
@@ -144,7 +145,12 @@ def main(args=None):
 
     unified_publisher = UnifiedPublisher()
 
-    rclpy.spin(unified_publisher)
+    while True:
+        try:
+            rclpy.spin(unified_publisher)
+        except Exception as e:
+            print("Something went wrong.  Restarting camera feed now.")
+            unified_publisher = UnifiedPublisher()
 
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
