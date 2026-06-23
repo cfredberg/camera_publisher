@@ -35,7 +35,7 @@ class UsbCameraPublisher(Node):
         self.declare_parameter('camera_name', "")
         self.declare_parameter('port', 0.0)
         self.declare_parameter('camera_id', 5)
-        self.declare_parameter('by-id', False)
+        self.declare_parameter('by_id', False)
         self.declare_parameter('blue', False)
         self.declare_parameter('thick', False)
         self.declare_parameter('small', False)
@@ -46,7 +46,7 @@ class UsbCameraPublisher(Node):
         port = self.get_parameter('port').get_parameter_value().double_value
         port = str(port)
         camera_id = self.get_parameter('camera_id').get_parameter_value().integer_value
-        by_id = self.get_parameter('by-id').get_parameter_value().bool_value
+        by_id = self.get_parameter('by_id').get_parameter_value().bool_value
         using_blue = self.get_parameter('blue').get_parameter_value().bool_value
         using_thick = self.get_parameter('thick').get_parameter_value().bool_value
         using_small = self.get_parameter('small').get_parameter_value().bool_value
@@ -104,7 +104,7 @@ class UsbCameraPublisher(Node):
 
         self.cap = cv2.VideoCapture(gst_str, cv2.CAP_GSTREAMER)
         print("Camera Opening...")
-        sleep(2)
+        sleep(3)
         if not self.cap.isOpened():
             raise CameraNotOpenError
         print("Camera Open!")
