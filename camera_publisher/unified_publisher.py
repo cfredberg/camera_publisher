@@ -65,10 +65,10 @@ class Camera():
                     frame = cv2.rotate(frame, cv2.ROTATE_180)
                 return frame
             else:
-                frame = np.zeros((480, 640, 3), dtype=np.uint8)
+                frame = np.zeros((240, 320, 3), dtype=np.uint8)
                 frame = cv2.putText(frame, 'No Signal', (300,240), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0))
                 return frame
-        frame = np.zeros((480, 640, 3), dtype=np.uint8)
+        frame = np.zeros((240, 320, 3), dtype=np.uint8)
         frame = cv2.putText(frame, f'{self.name} capture not open', (0,240), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0))
         return frame
 
