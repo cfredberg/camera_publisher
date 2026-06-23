@@ -24,6 +24,7 @@ setup(
             'usb_camera_publisher = camera_publisher.usb_publisher:main',
             'webcam_publisher = camera_publisher.webcam_publisher:main',
             'frame_recovery = camera_publisher.frame_recovery:main',
+            'unified_publisher = camera_publisher.unified_publisher:main',
         ],
     },
 )
