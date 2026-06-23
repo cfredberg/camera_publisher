@@ -62,7 +62,7 @@ class Camera():
         if self.cap_reopen_timer != None:
             diff = time.time() - self.cap_reopen_timer
             if diff > 2:
-                self.open_cap()
+                self.cap_reopen_timer = None
         elif self.cap.isOpened():
             self.cap_reopen_timer = None
             ret, frame = self.cap.read()
