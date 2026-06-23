@@ -133,7 +133,7 @@ class UnifiedPublisher(Node):
 
         self.bridge = CvBridge()
 
-        timer_period = 1/25  # seconds
+        timer_period = 1/40  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0
 
