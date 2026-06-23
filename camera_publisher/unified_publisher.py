@@ -117,7 +117,7 @@ class UnifiedPublisher(Node):
             reliability=ReliabilityPolicy.BEST_EFFORT
         )
 
-        self.publisher = self.create_publisher(Image, f'/cameras/raw/unified_camera', qos)
+        self.publisher = self.create_publisher(CompressedImage, f'/cameras/raw/unified_camera', qos)
 
         self.bridge = CvBridge()
 
@@ -130,7 +130,9 @@ class UnifiedPublisher(Node):
         frames_2_3 = cv2.hconcat([self.cams[2].read_frame(), self.cams[3].read_frame()])
         all_frames = cv2.vconcat([frames_0_1, frames_2_3])
         
-        msg = self.bridge.cv2_to_imgmsg(all_frames, "bgr8")
+        msg = self.bridge.cv2_to_compressed_imgmsg(all_frames, dst_format='jpg')
+
+        msg.header.stamp = self.get_clock().now().to_msg()
 
         self.publisher.publish(msg)
         self.get_logger().info("sent frame " + str(self.i))
@@ -147,7 +149,7 @@ def main(args=None):
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
     # when the garbage collector destroys the node object)
-    usb_camera_publisher.destroy_node()
+    unified_publisher.destroy_node()
     rclpy.shutdown()
 
 
