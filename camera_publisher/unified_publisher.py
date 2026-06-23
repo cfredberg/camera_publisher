@@ -74,9 +74,10 @@ class Camera():
                 frame = np.zeros((240, 320, 3), dtype=np.uint8)
                 frame = cv2.putText(frame, 'No Signal', (300,240), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0))
                 return frame
+        else:
+            self.open_cap()
         
         print(f"{self.name} not open")
-        self.open_cap()
 
         frame = np.zeros((240, 320, 3), dtype=np.uint8)
         frame = cv2.putText(frame, f'{self.name} capture not open', (0,240), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0))
