@@ -12,6 +12,7 @@ from sensor_msgs.msg import CompressedImage
 import cv2
 import pickle
 
+import time
 from time import sleep
 
 from rclpy.qos import QoSProfile, ReliabilityPolicy
@@ -30,35 +31,40 @@ class Camera():
     def __init__(self, name: str, port: float, flip: bool, cam_type: str):
         self.name = name
         self.flip = flip
+        self.cap_reopen_timer = None
         match cam_type:
             case "blue":
                 print(f"{self.name} using Blue Camera Stream")
-                gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:2.{port}:1.0-video-index0" ! image/jpeg,width=320,height=240,framerate=25/1 ! jpegdec ! videoconvert ! appsink'
+                self.gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:2.{port}:1.0-video-index0" ! image/jpeg,width=320,height=240,framerate=25/1 ! jpegdec ! videoconvert ! appsink'
             case "thick":
                 print(f"{self.name} using Thick Camera Stream")
-                gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:2.{port}:1.0-video-index0" ! image/jpeg,width=320,height=240,framerate=30/1 ! jpegdec ! videoconvert ! appsink'
+                self.gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:2.{port}:1.0-video-index0" ! image/jpeg,width=320,height=240,framerate=30/1 ! jpegdec ! videoconvert ! appsink'
             case "small":
                 print(f"{self.name} using Small Camera Stream")
-                gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:2.{port}:1.0-video-index0" ! image/jpeg,width=320,height=240,framerate=30/1 ! jpegdec ! videoconvert ! appsink'
+                self.gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:2.{port}:1.0-video-index0" ! image/jpeg,width=320,height=240,framerate=30/1 ! jpegdec ! videoconvert ! appsink'
             case "ir":
                 print(f"{self.name} using IR Camera Stream")
-                gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:2.{port}:1.0-video-index0" ! videoconvert ! videoscale ! video/x-raw,width=320,height=240 ! appsink'
+                self.gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:2.{port}:1.0-video-index0" ! videoconvert ! videoscale ! video/x-raw,width=320,height=240 ! appsink'
             case _:
                 print(f"{self.name} using Generic Camera Stream")
-                gst_str = f'v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:2.{port}:1.0-video-index0" ! videoconvert ! appsink'
+                self.gst_str = f'v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:2.{port}:1.0-video-index0" ! videoconvert ! appsink'
 
-        print(f"{self.name} gst_str: {gst_str}")
+        print(f"{self.name} gst_str: {self.gst_str}")
 
-        self.cap = cv2.VideoCapture(gst_str, cv2.CAP_GSTREAMER)
+        self.open_cap()
+
+    def open_cap(self):
+        self.cap_reopen_timer = time.time()
+        self.cap = cv2.VideoCapture(self.gst_str, cv2.CAP_GSTREAMER)
         print(f"{self.name} Opening...")
-        sleep(2)
-        if not self.cap.isOpened():
-            print(f"{self.name} unable to be opened")
-        else:
-            print(f"{self.name} open!")
 
     def read_frame(self):
-        if self.cap.isOpened():
+        if self.cap_reopen_timer != None:
+            diff = time.time() - self.cap_reopen_timer
+            if diff > 2:
+                self.open_cap()
+        elif self.cap.isOpened():
+            self.cap_reopen_timer = None
             ret, frame = self.cap.read()
             if ret:
                 if self.flip:
@@ -68,6 +74,10 @@ class Camera():
                 frame = np.zeros((240, 320, 3), dtype=np.uint8)
                 frame = cv2.putText(frame, 'No Signal', (300,240), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0))
                 return frame
+        
+        print(f"{self.name} not open")
+        self.open_cap()
+
         frame = np.zeros((240, 320, 3), dtype=np.uint8)
         frame = cv2.putText(frame, f'{self.name} capture not open', (0,240), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0))
         return frame
