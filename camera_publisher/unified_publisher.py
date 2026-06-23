@@ -51,10 +51,11 @@ class Camera():
 
         self.cap = cv2.VideoCapture(gst_str, cv2.CAP_GSTREAMER)
         print(f"{self.name} Opening...")
-        sleep(1)
+        sleep(2)
         if not self.cap.isOpened():
             print(f"{self.name} unable to be opened")
-        print(f"{self.name} open!")
+        else:
+            print(f"{self.name} open!")
 
     def read_frame(self):
         if self.cap.isOpened():
