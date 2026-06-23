@@ -132,7 +132,7 @@ class UnifiedPublisher(Node):
         
         msg = self.bridge.cv2_to_imgmsg(all_frames, "bgr8")
 
-        self.main_interface_frame.publish(msg)
+        self.publisher.publish(msg)
         self.get_logger().info("sent frame " + str(self.i))
         self.i += 1
 
