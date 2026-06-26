@@ -40,6 +40,7 @@ class UsbCameraPublisher(Node):
         self.declare_parameter('thick', False)
         self.declare_parameter('small', False)
         self.declare_parameter('ir', False)
+        self.declare_parameter('pi', False)
         self.declare_parameter('flip', False)
         use_name = self.get_parameter('use_name').get_parameter_value().bool_value
         camera_name = self.get_parameter('camera_name').get_parameter_value().string_value
@@ -51,6 +52,7 @@ class UsbCameraPublisher(Node):
         using_thick = self.get_parameter('thick').get_parameter_value().bool_value
         using_small = self.get_parameter('small').get_parameter_value().bool_value
         using_ir = self.get_parameter('ir').get_parameter_value().bool_value
+        using_pi = self.get_parameter('pi').get_parameter_value().bool_value
         self.flip = self.get_parameter('flip').get_parameter_value().bool_value
 
         qos = QoSProfile(
@@ -92,7 +94,9 @@ class UsbCameraPublisher(Node):
             if use_name: 
                 gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/{type_cam_src}/{camera_name}" ! videoconvert ! videoscale ! video/x-raw,width=320,height=240 ! appsink'
             else:
-                gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:{port}:1.0-video-index0" extra-controls="c,num_video_buffers=2" ! videoconvert ! videoscale ! video/x-raw,width=320,height=240 ! appsink'
+                gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:{port}:1.0-video-index0" extra-controls="c,num_video_buffers=2" ! videoscale ! video/x-raw,width=320,height=240 ! appsink'
+        elif using_pi:
+            gst_str = f"gst-launch-1.0 nvarguscamerasrc sensor-id={port} ! 'video/x-raw(memory:NVMM),width=320,height=240,framerate=30/1' ! nvvidconv ! 'video/x-raw,format=BGRx' ! videoconvert ! 'video/x-raw,format=BGR' ! appsink max-buffers=1 drop=true sync=false"
         else:
             print("Using Generic Camera Stream")
             if use_name:
