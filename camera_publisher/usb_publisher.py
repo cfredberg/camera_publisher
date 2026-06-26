@@ -72,21 +72,21 @@ class UsbCameraPublisher(Node):
         if using_blue:
             print("Using Blue Camera Stream")
             if use_name:
-                gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/{type_cam_src}/{camera_name}" io-mode=4 ! image/jpeg,width=320,height=240,framerate=25/1 ! jpegdec ! videoconvert ! appsink'
+                gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/{type_cam_src}/{camera_name}" ! image/jpeg,width=320,height=240,framerate=25/1 ! jpegdec ! videoconvert ! appsink'
             else:
-                gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:{port}:1.0-video-index0" io-mode=4 ! image/jpeg,width=320,height=240,framerate=25/1 ! jpegdec ! videoconvert ! appsink'
+                gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:{port}:1.0-video-index0" ! image/jpeg,width=320,height=240,framerate=25/1 ! jpegdec ! videoconvert ! appsink'
         elif using_thick:
             print("Using Thick Camera Stream")
             if use_name:
-                gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/{type_cam_src}/{camera_name}" io-mode=4 ! image/jpeg,width=320,height=240,framerate=30/1 ! jpegdec ! videoconvert ! appsink'
+                gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/{type_cam_src}/{camera_name}" ! image/jpeg,width=320,height=240,framerate=30/1 ! jpegdec ! videoconvert ! appsink'
             else:
-                gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:{port}:1.0-video-index0" io-mode=4 ! image/jpeg,width=320,height=240,framerate=30/1 ! jpegdec ! videoconvert ! appsink'
+                gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:{port}:1.0-video-index0" ! image/jpeg,width=320,height=240,framerate=30/1 ! jpegdec ! videoconvert ! appsink'
         elif using_small:
             print("Using Small Camera Stream")
             if use_name:
-                gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/{type_cam_src}/{camera_name}" io-mode=4 ! image/jpeg,width=320,height=240,framerate=30/1 ! jpegdec ! videoconvert ! appsink'
+                gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/{type_cam_src}/{camera_name}" ! image/jpeg,width=320,height=240,framerate=30/1 ! jpegdec ! videoconvert ! appsink'
             else:
-                gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:{port}:1.0-video-index0" io-mode=4 ! image/jpeg,width=320,height=240,framerate=30/1 ! jpegdec ! videoconvert ! appsink'
+                gst_str = f'gst-launch-1.0 v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:{port}:1.0-video-index0" ! image/jpeg,width=320,height=240,framerate=30/1 ! jpegdec ! videoconvert ! appsink'
         elif using_ir:
             print("Using IR Camera Stream")
             if use_name: 
@@ -98,7 +98,7 @@ class UsbCameraPublisher(Node):
             if use_name:
                 gst_str = f'v4l2src device="/dev/v4l/{type_cam_src}/{camera_name}" ! videoconvert ! appsink'
             else:
-                gst_str = f'v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:{port}:1.0-video-index0" io-mode=4 ! image/jpeg,width=320,height=240,framerate=15/1 ! jpegdec ! videoconvert ! appsink'
+                gst_str = f'v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:{port}:1.0-video-index0" ! image/jpeg,width=320,height=240,framerate=15/1 ! jpegdec ! videoconvert ! appsink'
 
         print(f"gst_str: {gst_str}")
 
