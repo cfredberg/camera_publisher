@@ -109,7 +109,7 @@ class UsbCameraPublisher(Node):
             raise CameraNotOpenError
         print("Camera Open!")
 
-        timer_period = 1/60  # seconds
+        timer_period = 1/30  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0
 
