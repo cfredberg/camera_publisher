@@ -96,7 +96,7 @@ class UsbCameraPublisher(Node):
             else:
                 gst_str = f'v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:{port}:1.0-video-index0" extra-controls="c,num_video_buffers=2" ! videoscale ! video/x-raw,width=320,height=240 ! appsink'
         elif using_pi:
-            gst_str = f'nvarguscamerasrc sensor-id={port} ! video/x-raw(memory:NVMM),width=320,height=240,framerate=30/1 ! nvvidconv ! video/x-raw,format=BGRx ! videoconvert ! video/x-raw,format=BGR ! appsink'
+            gst_str = f'nvarguscamerasrc sensor-id={port} ! video/x-raw(memory:NVMM),width=320,height=240,framerate=15/1 ! nvvidconv ! video/x-raw,format=BGRx ! videoconvert ! video/x-raw,format=BGR ! appsink'
             #  max-buffers=1 drop=true sync=false
         else:
             print("Using Generic Camera Stream")
