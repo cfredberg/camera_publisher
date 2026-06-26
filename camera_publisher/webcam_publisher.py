@@ -6,10 +6,12 @@ import numpy as np
 from cv_bridge import CvBridge
 
 from std_msgs.msg import String
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import Image, CompressedImage
 
 import cv2
 import pickle
+
+from rclpy.qos import QoSProfile, ReliabilityPolicy
 
 # from std_msgs.msg import String
 
@@ -25,7 +27,13 @@ class WebcamPublisher(Node):
 
     def __init__(self):
         super().__init__('webcam_publisher')
-        self.publisher = self.create_publisher(Image, f'/cameras/raw/camera_0', 1)
+
+        qos = QoSProfile(
+                depth=1,
+                reliability=ReliabilityPolicy.BEST_EFFORT
+            )
+
+        self.publisher = self.create_publisher(CompressedImage, f'/cameras/raw/camera_0', qos)
 
         self.bridge = CvBridge()
 
@@ -42,7 +50,9 @@ class WebcamPublisher(Node):
         if not ret:
             raise CameraStoppedReadingError
         
-        msg = self.bridge.cv2_to_imgmsg(frame, "bgr8")
+        msg = self.bridge.cv2_to_compressed_imgmsg(frame, dst_format='jpg')
+
+        msg.header.stamp = self.get_clock().now().to_msg()
         
         self.publisher.publish(msg)
         print(f"time: {self.get_clock().now()} frame: {str(self.i)}")

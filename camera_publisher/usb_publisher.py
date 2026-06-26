@@ -33,7 +33,7 @@ class UsbCameraPublisher(Node):
 
         self.declare_parameter('use_name', False)
         self.declare_parameter('camera_name', "")
-        self.declare_parameter('port', 0.0)
+        self.declare_parameter('port', "0.0.0")
         self.declare_parameter('camera_id', 5)
         self.declare_parameter('by_id', False)
         self.declare_parameter('blue', False)
@@ -43,7 +43,7 @@ class UsbCameraPublisher(Node):
         self.declare_parameter('flip', False)
         use_name = self.get_parameter('use_name').get_parameter_value().bool_value
         camera_name = self.get_parameter('camera_name').get_parameter_value().string_value
-        port = self.get_parameter('port').get_parameter_value().double_value
+        port = self.get_parameter('port').get_parameter_value().string_value
         port = str(port)
         camera_id = self.get_parameter('camera_id').get_parameter_value().integer_value
         by_id = self.get_parameter('by_id').get_parameter_value().bool_value
