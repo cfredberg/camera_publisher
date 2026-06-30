@@ -151,7 +151,7 @@ class UsbCameraPublisher(Node):
             if use_name:
                 gst_str = f'v4l2src device="/dev/v4l/{type_cam_src}/{camera_name}" ! videoconvert ! appsink'
             else:
-                gst_str = f'v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:{port}:1.0-video-index0" ! image/jpeg,width=1640,height=1232,framerate=15/1 ! jpegdec ! videoconvert ! appsink'
+                gst_str = f'v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:{port}:1.0-video-index0" ! image/jpeg,width=3280,height=2464,framerate=15/1 ! jpegdec ! videoconvert ! appsink'
 
         print(f"gst_str: {gst_str}")
 
