@@ -164,7 +164,7 @@ class UsbCameraPublisher(Node):
 
         self.cam = Camera(flip, gst_str)
 
-        timer_period = 1/30  # seconds
+        timer_period = 1/10  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0
 
