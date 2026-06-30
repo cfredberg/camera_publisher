@@ -139,7 +139,8 @@ class UsbCameraPublisher(Node):
                 gst_str = f'v4l2src device="/dev/v4l/{type_cam_src}/{camera_name}" ! videoconvert ! videoscale ! video/x-raw,width=320,height=240 ! videoconvert ! appsink'
             else:
                 if not legion:
-                    gst_str = f'v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:{port}:1.0-video-index0" extra-controls="c,num_video_buffers=2" ! videoscale ! video/x-raw,width=320,height=240 ! videoconvert ! appsink'
+                    gst_str = f'v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:{port}:1.0-video-index0" extra-controls="c,num_video_buffers=2" ! videoscale ! video/x-raw,width=160,height=120,framerate=9/1,format=UYVY ! videoconvert ! video/x-raw,format=BGR ! appsink'
+                    # gst_str = f'v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:{port}:1.0-video-index0" extra-controls="c,num_video_buffers=2" ! videoscale ! video/x-raw,width=320,height=240 ! videoconvert ! appsink'
                 else:
                     gst_str = f'v4l2src device="/dev/v4l/by-path/pci-0000:80:14.0-usb-0:{port}:1.0-video-index0" ! videoscale ! video/x-raw,width=160,height=120,framerate=9/1,format=UYVY ! videoconvert ! video/x-raw,format=BGR ! appsink'
         elif using_pi:
