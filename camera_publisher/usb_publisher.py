@@ -28,11 +28,12 @@ class CameraStoppedReadingError(Exception):
         return "The camera has unexpectedly stopped returning frames"
 
 class Camera():
-    def __init__(self, flip: bool, gst_str: str, name: str="camera"):
+    def __init__(self, flip: bool, gst_str: str, resize: bool, name: str="camera"):
         self.name = name
         self.flip = flip
         self.cap_reopen_timer = None
         self.gst_str = gst_str
+        self.resize = resize
         
         print(f"{self.name} gst_str: {self.gst_str}")
 
@@ -54,6 +55,9 @@ class Camera():
             if ret:
                 if self.flip:
                     frame = cv2.rotate(frame, cv2.ROTATE_180)
+
+                if self.resize:
+                    frame = cv2.resize(frame, (320, 240))
                 return frame
             else:
                 frame = np.zeros((240, 320, 3), dtype=np.uint8)
@@ -115,6 +119,8 @@ class UsbCameraPublisher(Node):
 
         print(f"Camera name: {camera_name}")
 
+        resize = False
+
         if using_blue:
             print("Using Blue Camera Stream")
             if use_name:
@@ -146,6 +152,7 @@ class UsbCameraPublisher(Node):
         elif using_pi:
             gst_str = f'nvarguscamerasrc sensor-id={port} ! video/x-raw(memory:NVMM),width=1920,height=1080,framerate=15/1 ! nvvidconv ! video/x-raw,format=BGRx ! videoconvert ! video/x-raw,format=BGR ! appsink'
             #  max-buffers=1 drop=true sync=false
+            resize = True
         else:
             print("Using Generic Camera Stream")
             if use_name:
@@ -162,7 +169,7 @@ class UsbCameraPublisher(Node):
         #     raise CameraNotOpenError
         # print("Camera Open!")
 
-        self.cam = Camera(flip, gst_str)
+        self.cam = Camera(flip, gst_str, resize)
 
         timer_period = 1/30  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
