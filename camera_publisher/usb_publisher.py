@@ -195,10 +195,10 @@ def main(args=None):
 
     while True:
         try:
-            rclpy.spin(unified_publisher)
+            rclpy.spin(usb_camera_publisher)
         except Exception as e:
             print("Something went wrong.  Restarting camera feed now.")
-            unified_publisher = UnifiedPublisher()
+            usb_camera_publisher = UsbCameraPublisher()
 
     # try:
     #     rclpy.spin(usb_camera_publisher)
