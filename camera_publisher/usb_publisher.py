@@ -176,7 +176,7 @@ class UsbCameraPublisher(Node):
         # if self.flip:
         #     frame = cv2.rotate(frame, cv2.ROTATE_180)
 
-        frame = cam.read_frame()
+        frame = self.cam.read_frame()
         
         msg = self.bridge.cv2_to_compressed_imgmsg(frame, dst_format='jpg')
 
