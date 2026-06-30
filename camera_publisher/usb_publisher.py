@@ -27,7 +27,7 @@ class CameraStoppedReadingError(Exception):
         return "The camera has unexpectedly stopped returning frames"
 
 class Camera():
-    def __init__(self, flip: bool, gst_str: str, name="camera": str):
+    def __init__(self, flip: bool, gst_str: str, name: str="camera"):
         self.name = name
         self.flip = flip
         self.cap_reopen_timer = None
