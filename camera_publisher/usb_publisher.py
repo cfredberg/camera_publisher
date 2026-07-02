@@ -89,6 +89,7 @@ class UsbCameraPublisher(Node):
         self.declare_parameter('pi', False)
         self.declare_parameter('flip', False)
         self.declare_parameter('legion', False)
+        self.declare_parameter('hi_res', False)
         use_name = self.get_parameter('use_name').get_parameter_value().bool_value
         camera_name = self.get_parameter('camera_name').get_parameter_value().string_value
         port = self.get_parameter('port').get_parameter_value().string_value
@@ -102,6 +103,7 @@ class UsbCameraPublisher(Node):
         using_pi = self.get_parameter('pi').get_parameter_value().bool_value
         flip = self.get_parameter('flip').get_parameter_value().bool_value
         legion = self.get_parameter('legion').get_parameter_value().bool_value
+        hi_res = self.get_parameter('hi_res').get_parameter_value().bool_value
 
         qos = QoSProfile(
             depth=1,
@@ -138,7 +140,10 @@ class UsbCameraPublisher(Node):
             if use_name:
                 gst_str = f'v4l2src device="/dev/v4l/{type_cam_src}/{camera_name}" ! image/jpeg,width=320,height=240,framerate=30/1 ! jpegdec ! videoconvert ! appsink'
             else:
-                gst_str = f'v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:{port}:1.0-video-index0" extra-controls="c,num_video_buffers=2" ! image/jpeg,width=320,height=240,framerate=30/1 ! jpegdec ! videoconvert ! appsink'
+                if not hi_res:
+                    gst_str = f'v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:{port}:1.0-video-index0" extra-controls="c,num_video_buffers=2" ! image/jpeg,width=320,height=240,framerate=30/1 ! jpegdec ! videoconvert ! appsink'
+                else:
+                    gst_str = f'v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:{port}:1.0-video-index0" extra-controls="c,num_video_buffers=2" ! image/jpeg,width=640,height=480,framerate=30/1 ! jpegdec ! videoconvert ! appsink'
         elif using_ir:
             print("Using IR Camera Stream")
             if use_name: 
@@ -158,7 +163,7 @@ class UsbCameraPublisher(Node):
             if use_name:
                 gst_str = f'v4l2src device="/dev/v4l/{type_cam_src}/{camera_name}" ! videoconvert ! appsink'
             else:
-                gst_str = f'v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:{port}:1.0-video-index0" ! image/jpeg,width=1640,height=1232,framerate=15/1 ! jpegdec ! videoconvert ! appsink'
+                gst_str = f'v4l2src device="/dev/v4l/by-path/platform-3610000.usb-usb-0:{port}:1.0-video-index0" ! image/jpeg,width=640,height=480,framerate=15/1 ! jpegdec ! videoconvert ! appsink'
 
         print(f"gst_str: {gst_str}")
 
